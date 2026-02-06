@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Agro-Data | Malchinguí</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --green:#22c55e;
+  --green-dark:#14532d;
+  --teal:#14b8a6;
+  --card:#f0fdf4;
+  --bg:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:Roboto, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 28px;
+  background:linear-gradient(90deg, var(--green-dark), var(--green));
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-weight:700;
+  font-size:18px;
+  letter-spacing:.5px;
+}
+
+nav button{
+  background:none;border:none;margin-left:14px;
+  font-weight:500;cursor:pointer;color:#dcfce7;
+  font-size:15px;
+  padding:6px 10px;
+  border-radius:8px;
+}
+nav button:hover{
+  background:rgba(255,255,255,.15);
+  color:white;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:36px 28px;
+}
+
+.section{display:none;}
+.section.active{display:block;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:30px;
+  margin-bottom:34px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:24px 24px 28px;
+  box-shadow:0 12px 26px rgba(0,0,0,.08);
+  border-left:6px solid var(--green);
+}
+
+.card h3{
+  margin-top:0;
+  margin-bottom:10px;
+  color:var(--green-dark);
+}
+
+.kpi{
+  font-size:36px;
+  font-weight:700;
+  margin-top:6px;
+  color:var(--green-dark);
+}
+
+.badge{
+  display:inline-block;
+  padding:10px 20px;
+  border-radius:999px;
+  background:linear-gradient(90deg, var(--green), var(--teal));
+  color:white;
+  font-weight:600;
+  margin-top:12px;
+}
+
+.traffic{
+  display:flex;
+  gap:22px;
+  margin:18px 0;
+  justify-content:center;
+}
+
+.light{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#e5e7eb;
+  opacity:.25;
+  border:5px solid #e5e7eb;
+  transition: all .3s ease;
+}
+
+.light.green.on{
+  background:#22c55e;
+  border-color:#16a34a;
+  opacity:1;
+  box-shadow:0 0 18px rgba(34,197,94,.8);
+}
+
+.light.yellow.on{
+  background:#facc15;
+  border-color:#eab308;
+  opacity:1;
+  box-shadow:0 0 18px rgba(250,204,21,.8);
+}
+
+.light.red.on{
+  background:#ef4444;
+  border-color:#dc2626;
+  opacity:1;
+  box-shadow:0 0 18px rgba(239,68,68,.8);
+}
+
+.filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  margin-bottom:16px;
+  align-items:flex-end;
+}
+
+input, button{
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid #e5e7eb;
+  font-family:Roboto;
+}
+
+button.primary{
+  background:linear-gradient(90deg, var(--teal), var(--green));
+  color:white;border:none;cursor:pointer;
+}
+button.primary:hover{filter:brightness(.95);}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+  margin-top:10px;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left;
+}
+th{color:var(--green-dark);}
+
+.chat-box{
+  height:260px;
+  overflow-y:auto;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+}
+
+.msg.user{
+  background:#dcfce7;
+  padding:8px 12px;
+  border-radius:12px;
+  margin-bottom:8px;
+  width:fit-content;
+}
+.msg.bot{
+  background:#e0f2fe;
+  padding:8px 12px;
+  border-radius:12px;
+  margin-bottom:8px;
+  width:fit-content;
+}
+
+.chat-input{
+  display:flex;
+  gap:10px;
+}
+
+.chat-input input{flex:1;}
+
+.subtle{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.consejos-card{
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.consejos-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex-grow: 1;
+  margin-top: 10px;
+}
+
+.consejos-grid div{
+  background: #dcfce7;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #065f46;
+  display: flex;
+  align-items: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🌱 Agro-Data – Malchinguí</div>
+  <nav>
+    <button onclick="show('clima')">Clima</button>
+    <button onclick="show('historico')">Histórico</button>
+    <button onclick="show('mapa')">Mapa</button>
+    <button onclick="show('chat')">Chat IA</button>
+  </nav>
+</header>
+
+<div class="container">
+
+<section id="clima" class="section active">
+  <h2>📊 Estado Actual del Clima</h2>
+  <p class="subtle">
+    Esta sección muestra en tiempo real los datos climáticos captados en Malchinguí.
+    Aquí puedes ver la temperatura, humedad, viento y el nivel de riesgo de helada.
+  </p>
+
+  <div class="grid">
+    <div class="card">🌡️ Temperatura<div id="temp" class="kpi">-- °C</div></div>
+    <div class="card">💧 Humedad<div id="hum" class="kpi">-- %</div></div>
+    <div class="card">💨 Viento<div id="viento" class="kpi">-- km/h</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>🚦 Riesgo de Helada</h3>
+
+      <p class="subtle">
+        El semáforo indica el nivel de riesgo para tus cultivos:
+        🟢 Verde: Sin riesgo,
+        🟡 Amarillo: Precaución,
+        🔴 Rojo: Alto riesgo de helada.
+      </p>
+
+      <div class="traffic">
+        <div id="g" class="light green"></div>
+        <div id="y" class="light yellow"></div>
+        <div id="r" class="light red"></div>
+      </div>
+
+      <div id="alerta" class="badge">--</div>
+
+      <p id="reco">
+        Aquí aparecerán las recomendaciones automáticas del sistema basadas en reglas y Machine Learning.
+      </p>
+
+      <p class="subtle" id="mlinfo">
+        El modelo de Machine Learning analiza los datos históricos y actuales para estimar el riesgo de helada.
+        Este resultado se combina con reglas técnicas para generar la alerta final.
+      </p>
+    </div>
+
+    <div class="card consejos-card">
+         <h3>🌾 Consejos Rápidos para el Agricultor</h3>
+        <div class="consejos-grid" id="consejos-container"></div>
+    </div>
+
+
+  </div>
+</section>
+
+<section id="historico" class="section">
+  <h2>📈 Histórico Climático</h2>
+  <p class="subtle">
+    En esta sección puedes consultar los registros históricos de clima de Malchinguí,
+    filtrar por fechas y analizar el comportamiento del clima a lo largo del tiempo.
+  </p>
+
+  <div class="grid" style="grid-template-columns: 1fr;">
+        <div class="card">
+            <h3>🔍 Filtros & Gráfica</h3>
+            <div class="filters">
+            <input type="date" id="desde">
+            <input type="date" id="hasta">
+            <button class="primary" onclick="cargarHistorico()">Buscar</button>
+            </div>
+            <canvas id="graficaHistorico"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            
+        </div>
+
+        <div class="card" style="margin-top: 10px;">
+            <h3>📋 Registros</h3>
+            <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Temp</th>
+                    <th>Hum</th>
+                    <th>Viento</th>
+                </tr>
+                </thead>
+                <tbody id="tabla"></tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; margin-top:14px;">
+        <button class="primary" onclick="prevPage()">⬅ Anterior</button>
+        <span id="pageInfo"></span>
+        <button class="primary" onclick="nextPage()">Siguiente ➡</button>
+    </div>
+
+    
+</section>
+
+<section id="mapa" class="section">
+  <h2>🗺️ Mapa de Malchinguí</h2>
+  <p class="subtle">
+    Visualiza la ubicación geográfica de Malchinguí y los puntos donde se encuentren las zonas de cultivo con mayor riesgo climático.
+  </p>
+
+  <div class="card">
+    <iframe 
+      src="https://maps.google.com/maps?q=Malchingui&t=&z=13&ie=UTF8&iwloc=&output=embed"
+      width="100%" height="360" style="border:none;border-radius:18px;">
+    </iframe>
+  </div>
+</section>
+
+<section id="chat" class="section">
+  <h2>🤖 Chat IA Agrícola</h2>
+  <p class="subtle">
+    Consulta a un asistente inteligente que te ayudará con recomendaciones agrícolas,
+    interpretación del clima y buenas prácticas para proteger tus cultivos.
+  </p>
+
+  <div class="card">
+    <div id="chatBox" class="chat-box"></div>
+    <div class="chat-input">
+      <input id="userMsg" placeholder="Ej: ¿Cómo protejo mis cultivos del frío?">
+      <button class="primary" onclick="enviarMensaje()">Enviar</button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* =============================
+   CONSEJOS DINÁMICOS
+============================= */
+const consejos = [
+  "🌱 Riega los cultivos al atardecer para reducir el impacto del frío nocturno.",
+  "🧤 Cubre las plantas sensibles con plástico o manta térmica en noches frías.",
+  "🌬️ Evita fumigar en horas de viento fuerte para no desperdiciar insumos.",
+  "📊 Revisa los precios antes de vender: no aceptes pagos injustos.",
+  "🌧️ Aprovecha días de humedad alta para fertilizar el suelo.",
+  "🕯️ En noches de helada, pequeños fogones ayudan a subir la temperatura local.",
+  "📅 Planifica tus siembras según las tendencias climáticas semanales.",
+  "🧑‍🌾 Coordina con otros agricultores para vender en conjunto y negociar mejor."
+];
+
+let indice = 0;
+
+function mostrarConsejos() {
+  const cont = document.getElementById("consejos-container");
+  cont.innerHTML = "";
+
+  const grupo = consejos.slice(indice, indice + 4);
+
+  grupo.forEach(c => {
+    cont.innerHTML += `<div>${c}</div>`;
+  });
+
+  indice += 4;
+  if (indice >= consejos.length) indice = 0;
+}
+
+mostrarConsejos();
+setInterval(mostrarConsejos, 10000);
+
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* =============================
+   CLIMA ACTUAL
+============================= */
+async function cargarEstado() {
+  try {
+    const res = await fetch("/api/estado");
+    const data = await res.json();
+
+    document.getElementById("temp").innerText = data.temperatura + " °C";
+    document.getElementById("hum").innerText = data.humedad + " %";
+    document.getElementById("viento").innerText = data.viento + " km/h";
+
+    document.getElementById("g").classList.remove("on");
+    document.getElementById("y").classList.remove("on");
+    document.getElementById("r").classList.remove("on");
+
+    if (data.alerta_final === "BAJO") {
+      document.getElementById("g").classList.add("on");
+    } else if (data.alerta_final === "MEDIO") {
+      document.getElementById("y").classList.add("on");
+    } else {
+      document.getElementById("r").classList.add("on");
+    }
+
+    document.getElementById("alerta").innerText = 
+      `ML: ${data.riesgo_ml} (Confianza ${data.confianza_ml}) · Evaluación técnica: ${data.riesgo_reglas}`;
+
+    document.getElementById("reco").innerText =
+      data.alerta_final === "ALTO"
+        ? "⚠️ Riesgo alto de helada. Protege tus cultivos esta noche."
+        : data.alerta_final === "MEDIO"
+        ? "🟡 Precaución. Monitorea el clima en las próximas horas."
+        : "🟢 Sin riesgo significativo de helada.";
+  } catch (e) {
+    document.getElementById("reco").innerText = "❌ Error conectando al servidor";
+  }
+}
+
+/* =============================
+   HISTÓRICO
+============================= */
+let currentPage = 1;
+const limit = 12;
+let chartHistorico = null;   // <- para poder destruir la gráfica anterior
+
+async function cargarHistorico() {
+  const desde = document.getElementById("desde").value;
+  const hasta = document.getElementById("hasta").value;
+
+  let url = `/api/historico?page=${currentPage}&limit=${limit}`;
+  if (desde && hasta) {
+    url += `&desde=${desde}&hasta=${hasta}`;
+  }
+
+  const res = await fetch(url);
+  const result = await res.json();
+  const data = result.data;
+
+  const tbody = document.getElementById("tabla");
+  tbody.innerHTML = "";
+
+  // 👉 Arrays para la gráfica
+  const labels = [];
+  const temps = [];
+
+  // Invertimos para que la gráfica vaya de antiguo → reciente
+  data.slice().reverse().forEach(r => {
+    labels.push(r.fecha_hora);
+    temps.push(r.temperatura);
+
+    let color = "#22c55e"; // verde
+    if (r.temperatura <= 5) color = "#3b82f6";   // azul (frío)
+    else if (r.temperatura > 5 && r.temperatura < 12) color = "#facc15"; // amarillo
+    else if (r.temperatura >= 12) color = "#ef4444"; // rojo (calor)
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.fecha_hora}</td>
+        <td style="font-weight:600; color:${color};">${r.temperatura} °C</td>
+        <td>${r.humedad}</td>
+        <td>${r.viento}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("pageInfo").innerText =
+    `Página ${result.page} de ${Math.ceil(result.total / result.limit)}`;
+
+  // =============================
+  // 📈 GRÁFICA HISTÓRICA
+  // =============================
+  const ctx = document.getElementById("graficaHistorico").getContext("2d");
+
+  if (chartHistorico) {
+    chartHistorico.destroy();  // elimina la gráfica anterior
+  }
+
+  chartHistorico = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Temperatura (°C)',
+        data: temps,
+        borderWidth: 2,
+        tension: 0.35,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        x: {
+          ticks: {
+            maxTicksLimit: 6
+          }
+        }
+      }
+    }
+  });
+}
+
+function nextPage() {
+  currentPage++;
+  cargarHistorico();
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    cargarHistorico();
+  }
+}
+
+
+/* =============================
+   CHAT IA
+============================= */
+function enviarMensaje() {
+  const msg = document.getElementById("userMsg").value;
+  if (!msg) return;
+
+  const chat = document.getElementById("chatBox");
+  chat.innerHTML += `<div class="msg user">${msg}</div>`;
+
+  fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mensaje: msg })   // 👈 AQUÍ el cambio
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Respuesta API:", data);  // DEBUG
+
+    if (data.reply) {
+      chat.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+    } else {
+      chat.innerHTML += `<div class="msg bot">❌ Respuesta vacía del servidor</div>`;
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+  })
+  .catch(err => {
+    console.error(err);
+    chat.innerHTML += `<div class="msg bot">❌ Error conectando con Gemini</div>`;
+  });
+
+  document.getElementById("userMsg").value = "";
+}
+
+
+
+
+/* =============================
+   EVENTOS
+============================= */
+document.querySelector("#historico button").addEventListener("click", cargarHistorico);
+document.querySelector("#chat button").addEventListener("click", enviarMensaje);
+
+setInterval(cargarEstado, 10000); // actualiza cada 10 segundos
+cargarEstado();
+</script>
+
+
+</body>
+</html>
